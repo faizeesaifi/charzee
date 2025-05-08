@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WebSocket Client</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    #messageBox {
+      margin-top: 20px;
+      width: 80%;
+      height: 300px;
+      overflow-y: scroll;
+      border: 1px solid #ccc;
+      padding: 10px;
+      background-color: #f9f9f9;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>WebSocket Client</h1>
+  <div id="messageBox"></div>
+  
+  <button id="sendMessage">Send Test Message</button>
+
+  <script>
+    // Replace with your Railway app URL and port
+    const socket = new WebSocket('wss://charzee.railway.app'); // No path, just the domain
+
+    // Connection open
+    socket.onopen = () => {
+      console.log('WebSocket connection established');
+      appendMessage('WebSocket connected');
+    };
+
+    // Handle incoming messages
+    socket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      appendMessage(`Message from server: ${data.message}`);
+    };
+
+    // Handle errors
+    socket.onerror = (error) => {
+      console.error('WebSocket Error:', error);
+      appendMessage('Error connecting to WebSocket');
+    };
+
+    // Handle connection close
+    socket.onclose = () => {
+      console.log('WebSocket connection closed');
+      appendMessage('WebSocket connection closed');
+    };
+
+    // Send a test message when button is clicked
+    document.getElementById('sendMessage').onclick = () => {
+      const message = { type: 'message', content: 'Hello from client!' };
+      socket.send(JSON.stringify(message));
+      appendMessage('Message sent to server: Hello from client!');
+    };
+
+    // Helper function to append messages to the message box
+    function appendMessage(message) {
+      const messageBox = document.getElementById('messageBox');
+      messageBox.innerHTML += `<p>${message}</p>`;
+    }
+  </script>
+</body>
+</html>
